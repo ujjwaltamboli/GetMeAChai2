@@ -7,7 +7,7 @@ const page = () => {
     const { data: session } = useSession()
     if (session) {
         const router=useRouter();
-        router.push('/profile');
+        router.push('/dasboard');
     }
     return (
         <div className="bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px] flex flex-col items-center">

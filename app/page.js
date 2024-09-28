@@ -1,17 +1,18 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="bg-[#000000] bg-[radial-gradient(#ffffff33_1px,#00091d_1px)] bg-[size:20px_20px]">
       <div className="text-white h-[44vh] flex flex-col items-center justify-center">
         <div className="text-4xl font-serif font-bold flex flex-col items-center justify-center">
-          <p>Buy Me A Chai</p>
+          <p>Get Me A Chai</p>
           <img src="/coffee-lover.gif" width={80}/>
         </div>
         <span>A crowd funding platform for creators. Get funded by your fans and followers. Start now! </span>
         <div>
-        <button type="button" className=" text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Start Here</button>
-        <button type="button" className=" text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Read More</button>
+        <Link href="/login"><button type="button" className=" text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Start Here</button></Link>
+        <Link href="/about"><button type="button" className=" text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-4 focus:outline-none focus:ring-purple-200 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">About Us</button></Link>
         </div>
         
       </div>
@@ -21,12 +22,12 @@ export default function Home() {
       <div className="flex justify-arround items-center text-center">
         <div className="text-white font-bold text-center flex flex-col items-center justify-center mx-11">
           <img className="text-black rounded-full bg-white p-0" src="/man-image.jpg" width={88}/>
-          <p className="font-bold">Fans want to help</p>
+          <p className="font-bold">Fund yourself</p>
           <p>Your fans are available for you to help you</p>
         </div>
         <div className="text-white text-center flex flex-col items-center justify-center mx-11">
           <img className="text-black rounded-full bg-white p-0" src="/dollar.gif" width={88}/>
-          <p className="font-bold">Fans want to help</p>
+          <p className="font-bold">Fund yourself</p>
           <p>Your fans are available for you to help you</p>
         </div>
         <div className="text-white font-bold text-center flex flex-col items-center justify-center mx-11">
