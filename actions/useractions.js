@@ -3,6 +3,28 @@ import React from 'react'
 import User from '@/models/User'
 import connectDB from '@/db/connectDb'
 import Payment from '@/models/Payment'
+import Razorpay from 'razorpay'
+
+
+
+const razorpay=new Razorpay({
+    key_id:process.env.KEY_ID,
+    key_secret:process.env.KEY_SECRET,
+})
+
+
+
+export const createOrder=async(amount)=>{
+    try{
+        const options={amount:amount*100, currency:'INR'}
+        const order=await razorpay.orders.create(options);
+        console.log(order);
+        return order;
+    }
+    catch(error){
+        console.log(error);
+    }
+}
 
 export const updateProfile=async(e,email)=>{
     await connectDB();
@@ -21,9 +43,9 @@ export const fetchdata=async(email)=>{
 
 export const addNewPayment=async(e)=>{
     await connectDB();
-    let data=Object.fromEntries(e);
+    // let data=Object.fromEntries(e);
     console.log("Hello world");
-    let a= await Payment.create(data);
+    let a= await Payment.create(e);
 
 }
 

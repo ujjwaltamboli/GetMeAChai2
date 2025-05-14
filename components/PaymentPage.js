@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import { addNewPayment } from '@/actions/useractions'
+import { addNewPayment, createOrder } from '@/actions/useractions'
 import { fetchPayments } from '@/actions/useractions'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,11 +8,24 @@ import { Bounce } from 'react-toastify';
 import { useSession } from 'next-auth/react';
 import { fetchdata } from '@/actions/useractions';
 
+import Razorpay from 'razorpay';
+
+
 const PaymentPage = ({ username }) => {
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   const [payments, setPayments] = useState([{ name: "ujjwal" }]);
   const {data : session}=useSession();
   const [userdb,setuserdb]=useState({});
   const [rs,setrs]=useState(0);
+
+  useEffect(() => {
+  const script = document.createElement("script");
+  script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  script.async = true;
+  document.body.appendChild(script);
+}, []);
+
 
   const getSum=()=>{
     let sum=0;
@@ -20,23 +33,71 @@ const PaymentPage = ({ username }) => {
       return sum;
   }
 
-  const takeInput2 = (e) => {
-    
-    addNewPayment(e);
-    
-    getData();
-    toast('Payment done successfully', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-      });
+const initiatePayment = async (e) => {
+  // e.preventDefault();
+
+  // const formData = new FormData(e.target);
+  const data = Object.fromEntries(e);
+  const amount = data.amount;
+
+  try {
+    const order = await createOrder(amount);
+
+    const options = {
+      key: "rzp_test_4UuSVfCkeceMaP", // Ensure this value is correct
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      callback_url: "localhost:3000",
+      method: ["upi", "card", "netbanking", "wallet"],
+      handler: async (response) => {
+        console.log("Payment response:", response);
+
+        let reply=await fetch("http://localhost:3000/api/user",{
+          method:"POST",
+          headers:{"Content-Type":"application/JSON"},
+          body:JSON.stringify({
+            order_id:response.razorpay_order_id,
+            payment_id:response.razorpay_payment_id,
+            signature:response.razorpay_signature,
+          })
+        }
+        )
+        const result =await reply.json();
+
+        const paymentData = {
+          ...data,
+          payment_id: response.razorpay_payment_id,
+          order_id: response.razorpay_order_id,
+          signature: response.razorpay_signature,
+        };
+
+        if (result.success){
+          console.log("Payment Successful");
+          await addNewPayment(paymentData);
+          getData();
+        }
+        else{
+          console.log("Payment failed");
+        }
+      },
+      prefill: {
+        name: data.name,
+        email: "testuser@example.com",
+        contact: "9999999999",
+        upi: "success@razorpay" // For testing UPI in test mode
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
+  } catch (error) {
+    console.error("Error initiating payment: ", error);
   }
+};
+
+
 
   const getData = async () => {
     console.log("Hello universe");
@@ -72,7 +133,6 @@ const PaymentPage = ({ username }) => {
         draggable
         pauseOnHover
         theme="light"
-
       />
       {/* Same as */}
       <ToastContainer />
@@ -124,7 +184,7 @@ const PaymentPage = ({ username }) => {
           </div>
           <div className='w-[40%] bg-slate-900 p-5'>
             <h2 className='font-bold text-lg'>Make a Payment</h2>
-            <form action={takeInput2}>
+            <form action={initiatePayment}>
               <input name='name' id="name" type="text" className='w-full bg-slate-800 mr-3  mb-5 h-8 rounded-lg p-3' placeholder='Enter Name' required/>
               <input name='message' id="message" type="text" className='w-full bg-slate-800 mr-3  mb-5 h-8 rounded-lg p-3' placeholder='Enter Message' />
               <input name='amount' id="amount" type="integer" className='w-full bg-slate-800 mr-3  mb-5 h-8 rounded-lg p-3' placeholder='Enter Amount' required/>
